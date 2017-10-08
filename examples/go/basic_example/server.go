@@ -9,6 +9,7 @@ package main
 import (
 	"context"
 	"encoding/base64"
+	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -17,12 +18,16 @@ import (
 	pb "github.com/qlikmats/server-side-extension/examples/go/basic_example/proto"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 )
 
 type server struct{}
 
-const (
-	port = ":50051"
+var (
+	tls      = flag.Bool("tls", false, "Connection uses TLS if true, else plain TCP")
+	certFile = flag.String("cert_file", "", "The TLS cert file")
+	keyFile  = flag.String("key_file", "", "The TLS key file")
+	port     = flag.Int("port", 50051, "The server port")
 )
 
 // Function definitions.
@@ -139,11 +144,28 @@ func (*server) sumOfRow(stream pb.Connector_ExecuteFunctionServer) error {
  * Main function.
  */
 func main() {
-	lis, err := net.Listen("tcp", port)
+	flag.Parse()
+
+	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", *port))
 	if err != nil {
-		log.Fatalf("Failed to listen on port %v: %v", port, err)
+		log.Fatalf("failed to listen: %v", err)
 	}
-	s := grpc.NewServer()
+
+	var opts []grpc.ServerOption
+	if *tls {
+		if *certFile == "" {
+			log.Fatalf("cert_file needs to be specified.")
+		}
+		if *keyFile == "" {
+			log.Fatalf("key_file needs to be specified.")
+		}
+		creds, err := credentials.NewServerTLSFromFile(*certFile, *keyFile)
+		if err != nil {
+			log.Fatalf("Failed to generate credentials %v", err)
+		}
+		opts = []grpc.ServerOption{grpc.Creds(creds)}
+	}
+	s := grpc.NewServer(opts...)
 	pb.RegisterConnectorServer(s, &server{})
 
 	err = s.Serve(lis)
