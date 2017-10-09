@@ -8,17 +8,20 @@ package main
 
 import (
 	"context"
-	"encoding/base64"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
 	"log"
 	"net"
 
+	"github.com/golang/protobuf/proto"
+
 	pb "github.com/qlikmats/server-side-extension/examples/go/basic_example/proto"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/metadata"
 )
 
 type server struct{}
@@ -40,7 +43,7 @@ var echoString = pb.FunctionDefinition{
 		&pb.Parameter{Name: "str1", DataType: pb.DataType_STRING},
 	},
 }
-var sumOfRows = pb.FunctionDefinition{
+var sumOfRow = pb.FunctionDefinition{
 	Name:         "SumOfRow",
 	FunctionId:   1,
 	FunctionType: pb.FunctionType_TENSOR,
@@ -50,7 +53,7 @@ var sumOfRows = pb.FunctionDefinition{
 		&pb.Parameter{Name: "col2", DataType: pb.DataType_NUMERIC},
 	},
 }
-var functionDefinitions = []*pb.FunctionDefinition{&echoString, &sumOfRows}
+var functionDefinitions = []*pb.FunctionDefinition{&echoString, &sumOfRow}
 
 // Plugin capabilities.
 var capabilities = pb.Capabilities{
@@ -64,40 +67,43 @@ var capabilities = pb.Capabilities{
  */
 func (*server) GetCapabilities(context.Context, *pb.Empty) (*pb.Capabilities, error) {
 	for _, c := range capabilities.Functions {
-		fmt.Printf("%+v\n", *c)
+		log.Printf("%+v", *c)
 	}
 
 	return &capabilities, nil
 }
 
 func (s *server) ExecuteFunction(stream pb.Connector_ExecuteFunctionServer) error {
-	// var binHdr = ""
-	// if md, ok := metadata.FromIncomingContext(stream.Context()); ok {
-	// 	binHdr = md["qlik-functionrequestheader-bin"][0]
-	// }
-	// if id, err := decodeBinHeader(binHdr); err != nil {
-	// 	fmt.Printf("Decode error: %v", err)
-	// } else {
-	// 	fmt.Printf("Function Id: %s\n", string(id))
-	// }
+	var functionRequestHeader = &pb.FunctionRequestHeader{}
+	if md, ok := metadata.FromIncomingContext(stream.Context()); ok {
+		binHdr := md["qlik-functionrequestheader-bin"][0]
 
-	return s.sumOfRow(stream)
+		if err := proto.Unmarshal([]byte(binHdr), functionRequestHeader); err != nil {
+			return errors.New("could not unmarshal header")
+		}
+	} else {
+		return errors.New("failed to retrieve metadata")
+	}
+
+	log.Printf("ExecuteFunction (id: %d)", functionRequestHeader.FunctionId)
+
+	switch functionRequestHeader.FunctionId {
+	case echoString.FunctionId:
+		return s.echoString(stream)
+	case sumOfRow.FunctionId:
+		return s.sumOfRow(stream)
+	default:
+		return errors.New("unimplemented function")
+	}
 }
 
 func (*server) EvaluateScript(pb.Connector_EvaluateScriptServer) error {
-	return nil
+	return errors.New("not supported/implemented")
 }
 
 /*
  * Private functions.
  */
-func decodeBinHeader(s string) ([]byte, error) {
-	if len(s)%4 == 0 {
-		// Input was padded, or padding was not necessary.
-		return base64.StdEncoding.DecodeString(s)
-	}
-	return base64.RawStdEncoding.DecodeString(s)
-}
 
 func (*server) echoString(stream pb.Connector_ExecuteFunctionServer) error {
 	for {
@@ -168,8 +174,7 @@ func main() {
 	s := grpc.NewServer(opts...)
 	pb.RegisterConnectorServer(s, &server{})
 
-	err = s.Serve(lis)
-	if err != nil {
+	if err = s.Serve(lis); err != nil {
 		log.Fatalf("Failed to serve: %v", err)
 	}
 }
