@@ -7,11 +7,21 @@ General background information is found here:
 * Documentation and tutorials for [gRPC](http://www.grpc.io/docs/) and [protobuf](https://developers.google.com/protocol-buffers/docs/overview)
 
 ## Getting started
-First of all, you need an installation of the [Go](https://golang.org/) programming language. After setting up your [Go](https://golang.org/) environment, open a command prompt and execute: 
+First of all, you need an installation of the [Go](https://golang.org/) programming language. 
+
+Next, you need to download and install the [protobuf compiler](https://github.com/google/protobuf/releases) and add the *protoc* executable to your %PATH%. Then, to install the protoc plugin for Go, execute:
+
+*go get -u github.com/golang/protobuf/protoc-gen-go*
+
+Note that the *protoc-gen-go* program also needs to be in your %PATH%.
+
+After setting up your [Go](https://golang.org/) environment, open a command prompt and execute: 
 
 *go get github.com/qlikmats/server-side-extension/examples/go/basic_example*
 
-Then, from your Go SSE plugin folder (i.e. %GOPATH%\src\github.com\qlikmats\server-side-extension\examples\go\basic_example), execute:
+You will get an "error" saying there are no go files in the \gen folder, but that's  fine - we will generate a file in that folder in the following step.
+
+From your Go SSE plugin folder (i.e. %GOPATH%\src\github.com\qlikmats\server-side-extension\examples\go\basic_example), execute:
 
 *go generate*
 
