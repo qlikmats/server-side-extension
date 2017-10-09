@@ -2,7 +2,7 @@
  * Implements the qlik.sse.Connector service.
  */
 
-//go:generate protoc -I .\proto .\proto\ServerSideExtension.proto --go_out=plugins=grpc:.\proto
+//go:generate protoc -I ..\..\..\proto ..\..\..\proto\ServerSideExtension.proto --go_out=plugins=grpc:.\gen
 
 package main
 
@@ -17,7 +17,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 
-	pb "github.com/qlikmats/server-side-extension/examples/go/basic_example/proto"
+	pb "github.com/qlikmats/server-side-extension/examples/go/basic_example/gen"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
