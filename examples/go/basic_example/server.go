@@ -2,7 +2,7 @@
  * Implements the qlik.sse.Connector service.
  */
 
-//go:generate protoc -I ..\..\..\proto ..\..\..\proto\ServerSideExtension.proto --go_out=plugins=grpc:.\gen
+//go:generate protoc -I ../../../proto ../../../proto/ServerSideExtension.proto --go_out=plugins=grpc:./gen
 
 package main
 
