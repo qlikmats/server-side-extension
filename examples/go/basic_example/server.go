@@ -131,13 +131,12 @@ func (*server) sumOfRow(stream pb.Connector_ExecuteFunctionServer) error {
 			return nil
 		}
 		for _, row := range in.Rows {
-			sum := row.Duals[0].NumData + row.Duals[1].NumData
-			outDual := pb.Dual{
-				NumData: sum, StrData: "",
+			sum := 0.0
+			for _, dual := range row.Duals {
+				sum += dual.NumData
 			}
-			outRow := pb.Row{
-				Duals: []*pb.Dual{&outDual},
-			}
+			outDual := pb.Dual{NumData: sum}
+			outRow := pb.Row{Duals: []*pb.Dual{&outDual}}
 			outBundle.Rows = append(outBundle.Rows, &outRow)
 		}
 		if err := stream.Send(outBundle); err != nil {
