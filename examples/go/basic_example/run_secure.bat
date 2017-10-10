@@ -1,1 +1,2 @@
+@echo off
 cmd /k "go run server.go -tls -cert_file=..\..\..\generate_certs_guide\sse_qliktest_generated_certs\sse_qliktest_server_certs\sse_server_cert.pem -key_file=..\..\..\generate_certs_guide\sse_qliktest_generated_certs\sse_qliktest_server_certs\sse_server_key.pem -port=50051"

@@ -174,6 +174,7 @@ func main() {
 	s := grpc.NewServer(opts...)
 	pb.RegisterConnectorServer(s, &server{})
 
+	log.Printf("Running SSE plugin on port: %d (secure mode: %t)", *port, *tls)
 	if err = s.Serve(lis); err != nil {
 		log.Fatalf("Failed to serve: %v", err)
 	}
