@@ -41,17 +41,21 @@ Use a different identifier for your own plug-in, and remember that this exact st
 
 The address (localhost:50051) should of course match the address in the server's configuration file.
 
-For single-machine development and testing it is OK to use insecure communication, but for production scenarios you should use certificates. See [Generating certificates](../../generate_certs_guide/README.md).
+For single-machine development and testing it is OK to use unsecure communication, but for production scenarios you should use certificates. See [Generating certificates](../../generate_certs_guide/README.md).
 
 ## Starting the server
 
 The Go gRPC sample server can be built and started using the go command:
 
-*go run server.go*
+*.\run_unsecure.bat*
 
-This will start the server in unsecure mode. To run in secure mode, please run the supplied batch file:
+This will start the server in unsecure mode. To run in secure mode, execute the following script instead:
 
 *.\run_secure.bat*
+
+## Run the example app
+Copy the file *SSE Go.qvf* to your Sense apps folder, i.e. *C:\Users\[user]\Qlik\Sense\Apps* and start Sense desktop (make sure the SSE Go plugin is up and running).
+
 
 ## Implementing a server - Protobuf generated files
 The interface between the Qlik Engine acting as a client and the Server-side extension acting as server is defined in 
