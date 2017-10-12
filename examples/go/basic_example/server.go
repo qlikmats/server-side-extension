@@ -30,7 +30,7 @@ var (
 	tls      = flag.Bool("tls", false, "Connection uses TLS if true, else plain TCP")
 	certFile = flag.String("cert_file", "", "The TLS cert file")
 	keyFile  = flag.String("key_file", "", "The TLS key file")
-	port     = flag.Int("port", 50051, "The server port")
+	port     = flag.Int("port", 50055, "The server port")
 )
 
 // Function definitions.
