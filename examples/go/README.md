@@ -32,9 +32,8 @@ This will generate the gRPC/Protobuf file(s) that your server will use  for impl
 ### Configuring QlikSense to use the sample gRPC server
 By default, the Go sample plug-in runs on port 50051 on localhost, so for a QlikSense Desktop installation, the following should be added to settings.ini:
 
-[Settings 7] 
-
-SSEPlugin=SSE_Go, localhost:50051[,PATH_TO_CERTIFICATE_FOLDER]
+*[Settings 7]* 
+*SSEPlugin=SSE_Go, localhost:50051[,PATH_TO_CERTIFICATE_FOLDER]*
 
 Note that the string SSE_Go is the identifier that will prefix all plug-in functions when they are called from within Qlik.
 Use a different identifier for your own plug-in, and remember that this exact string has to be used for your Sense applications to work with the extension.
@@ -47,11 +46,11 @@ For single-machine development and testing it is OK to use unsecure communicatio
 
 The Go gRPC sample server can be built and started using the go command:
 
-*.\run_unsecure.bat*
+*go run server.go*
 
-This will start the server in unsecure mode. To run in secure mode, execute the following script instead:
+This will start the server in unsecure mode. To run in secure mode, execute the following command instead:
 
-*.\run_secure.bat*
+*go run server.go -tls -cert_file=..\..\..\generate_certs_guide\sse_qliktest_generated_certs\sse_qliktest_server_certs\sse_server_cert.pem -key_file=..\..\..\generate_certs_guide\sse_qliktest_generated_certs\sse_qliktest_server_certs\sse_server_key.pem*
 
 ## Run the example app
 Copy the file *SSE Go.qvf* to your Sense apps folder, i.e. *C:\Users\[user]\Qlik\Sense\Apps* and start Sense desktop (make sure the SSE Go plugin is up and running).
@@ -66,7 +65,7 @@ the file [ServerSideExtension.proto](../../proto/ServerSideExtension.proto).
 The RPC methods implemented in the Basic example are GetCapabilities and ExecuteFunction. There is no script support.
 
 ### GetCapabilities method
-The GetCapabilities method just returns a Capabilities object.
+The GetCapabilities method returns a Capabilities object, describing the operations supported by the plugin.
 
 ### ExecuteFunction method
 The ExecuteFunction method switches over the numeric function identifier sent in the *qlik-functionrequestheader-bin* header. 
