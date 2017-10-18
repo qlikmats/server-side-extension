@@ -1,45 +1,38 @@
 version: 2
 jobs:
   build:
+    working_directory:
+      /go/src/github.com/qlikmats/server-side-extension/examples/go/basic_example
     docker:
-    - image: circleci/golang:1.8.1
+      - image: 'circleci/golang:1.8.1'
     steps:
-      - run: ls
-
-  build_go:
-    working_directory: /go/src/github.com/qlikmats/server-side-extension/examples/go/basic_example
-    docker:
-      
-    - image: circleci/golang:1.8.1
-    steps:
-       - checkout
-
-       - run: 
+      - checkout
+      - run:
           name: Copy code to Go workspace
-          command: cp -R examples/go/basic_example/* /go/src/github.com/qlikmats/server-side-extension/examples/go/basic_example    
-       - run: 
+          command:
+            cp -R examples/go/basic_example/*
+            /go/src/github.com/qlikmats/server-side-extension/examples/go/basic_example
+      - run:
           name: Go get dependencies
           command: go get -t -d -v ./...
-       - run: 
+      - run:
           name: Start SSE Server/Plugin
           command: go run ./server.go
           background: true
-       - run: 
+      - run:
           name: Sleep 2s
           command: sleep 2
-
-    test_go:
+    test:
       working_directory: ~/foo
       steps:
-       - run: 
-          name: Run tests
-          command: go test -v test/sseplugin_test.go
-
+        - run:
+            name: Run tests
+            command: go test -v test/sseplugin_test.go
 workflows:
   version: 2
   build-and-test:
     jobs:
-      - build_go
-      - test_go:
-        requires:
-          - build_go
+      - build
+      - test:
+          requires:
+            - build
