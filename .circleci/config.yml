@@ -23,6 +23,8 @@ jobs:
           name: Sleep 2s
           command: sleep 2
   test:
+    docker:
+      - image: 'circleci/golang:1.8.1'
     steps:
       - run:
           name: Run tests
