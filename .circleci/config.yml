@@ -1,11 +1,17 @@
 version: 2
 jobs:
-   build:
-     working_directory: /go/src/github.com/qlikmats/server-side-extension/examples/go/basic_example
-     docker:
+  build:
+    docker:
+    - image: circleci/golang:1.8.1
+    steps:
+      - run: ls
+
+  build_go:
+    working_directory: /go/src/github.com/qlikmats/server-side-extension/examples/go/basic_example
+    docker:
       
-      - image: circleci/golang:1.8.1
-     steps:
+    - image: circleci/golang:1.8.1
+    steps:
        - checkout
 
        - run: 
@@ -21,6 +27,19 @@ jobs:
        - run: 
           name: Sleep 2s
           command: sleep 2
+
+    test_go:
+      working_directory: ~/foo
+      steps:
        - run: 
           name: Run tests
           command: go test -v test/sseplugin_test.go
+
+workflows:
+  version: 2
+  build-and-test:
+    jobs:
+      - build_go
+      - test_go:
+        requires:
+          -build_go
