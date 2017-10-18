@@ -1,0 +1,22 @@
+version: 2
+jobs:
+   build:
+     working_directory: /go/src/github.com/qlikmats/server-side-extension/examples/go/basic_example
+     docker:
+      
+      - image: circleci/golang:1.8.1
+     steps:
+       - checkout
+
+       - run: cp -R examples/go/basic_example/* /go/src/github.com/qlikmats/server-side-extension/examples/go/basic_example    
+       - run: go get -t -d -v ./...
+       - run: 
+          name: Start SSE Server/Plugin
+          command: go run ./server.go
+          background: true
+       - run: 
+          name: Sleep 2s
+          command: sleep 2
+       - run: 
+          name: Run tests
+          command: go test -v test/sseplugin_test.go
