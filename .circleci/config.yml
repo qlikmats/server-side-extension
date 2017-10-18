@@ -42,4 +42,4 @@ workflows:
       - build_go
       - test_go:
         requires:
-          -build_go
+          - build_go
