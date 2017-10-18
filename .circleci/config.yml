@@ -8,8 +8,12 @@ jobs:
      steps:
        - checkout
 
-       - run: cp -R examples/go/basic_example/* /go/src/github.com/qlikmats/server-side-extension/examples/go/basic_example    
-       - run: go get -t -d -v ./...
+       - run: 
+          name: Copy code to Go workspace
+          command: cp -R examples/go/basic_example/* /go/src/github.com/qlikmats/server-side-extension/examples/go/basic_example    
+       - run: 
+          name: Go get dependencies
+          command: go get -t -d -v ./...
        - run: 
           name: Start SSE Server/Plugin
           command: go run ./server.go
