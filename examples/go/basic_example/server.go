@@ -7,7 +7,7 @@
 package main
 
 import (
-	"context"
+	"golang.org/x/net/context"
 	"errors"
 	"flag"
 	"fmt"
