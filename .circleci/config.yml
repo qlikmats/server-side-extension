@@ -4,7 +4,7 @@ jobs:
     working_directory:
       /go/src/github.com/qlikmats/server-side-extension/examples/go/basic_example
     docker:
-      - image: 'circleci/golang:1.8.1'
+      - image: grpc/go
     steps:
       - checkout
       - run:
@@ -15,6 +15,9 @@ jobs:
       - run:
           name: Go get dependencies
           command: go get -t -d -v ./...
+      - run :
+          name: Generate protobuf/gRPC code.
+          command: protoc -I ./proto ./proto/ServerSideExtension.proto --go_out=plugins=grpc:/go/src/github.com/qlikmats/server-side-extension/examples/go/basic_example/gen
       - run:
           name: Start SSE Server/Plugin
           command: go run ./server.go
