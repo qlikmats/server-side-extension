@@ -12,12 +12,12 @@ jobs:
           command:
             cp -R examples/go/basic_example/*
             /go/src/github.com/qlikmats/server-side-extension/examples/go/basic_example
+      - run :
+          name: Generate protobuf/gRPC code.
+          command: protoc -I ./proto ./proto/ServerSideExtension.proto --go_out=plugins=grpc:/go/src/github.com/qlikmats/server-side-extension/examples/go/basic_example/gen            
       - run:
           name: Go get dependencies
           command: go get -t -d -v ./...
-      - run :
-          name: Generate protobuf/gRPC code.
-          command: protoc -I ./proto ./proto/ServerSideExtension.proto --go_out=plugins=grpc:/go/src/github.com/qlikmats/server-side-extension/examples/go/basic_example/gen
       - run:
           name: Start SSE Server/Plugin
           command: go run ./server.go
